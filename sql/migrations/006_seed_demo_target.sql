@@ -1,0 +1,1 @@
+-- The executable embeds and applies migration 006_seed_demo_target; see internal/store/db.go.
