@@ -1,0 +1,1 @@
+-- The executable embeds and applies migration 004_audit_logs; see internal/store/db.go.
