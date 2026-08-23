@@ -44,7 +44,7 @@ func (s *StatsService) Dashboard(ctx context.Context) (Stats, error) {
 	}
 	renewals, e := s.renewals.All(ctx, store.RenewalFilter{})
 	if e != nil {
-		return out, e
+		return *out, e
 	}
 	cutoff := time.Now().Add(-30 * 24 * time.Hour)
 	for _, r := range renewals {
@@ -61,7 +61,7 @@ func (s *StatsService) Dashboard(ctx context.Context) (Stats, error) {
 	}
 	notifications, e := s.notifications.All(ctx, store.NotificationFilter{})
 	if e != nil {
-		return out, e
+		return *out, e
 	}
 	today := time.Now().UTC().Format("2006-01-02")
 	for _, n := range notifications {
@@ -70,3 +70,4 @@ func (s *StatsService) Dashboard(ctx context.Context) (Stats, error) {
 		}
 	}
 	return *out, nil
+}
