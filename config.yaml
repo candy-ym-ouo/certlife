@@ -1,0 +1,20 @@
+addr: 127.0.0.1:8080
+api_key: dev-key
+db_path: certlife.db
+log_level: info
+deploy:
+  directory: deployments
+  rollback_on_fail: true
+notify:
+  smtp_host: ""
+  smtp_port: 25
+  smtp_username: ""
+  smtp_password: ""
+  smtp_from: certlife@localhost
+  webhook_secret: dev-secret
+scheduler:
+  expiry_checker_interval: 6h
+  renewal_runner_interval: 1h
+  deploy_verifier_interval: 30m
+  notify_dispatcher_interval: 5m
+  daily_summary_interval: 24h

@@ -1,0 +1,1 @@
+-- The executable embeds and applies migration 003_notification_rules; see internal/store/db.go.
