@@ -1,0 +1,11 @@
+/bin/
+/dist/
+/deployments/*
+!/deployments/.gitkeep
+*.db
+*.db-shm
+*.db-wal
+*.log
+*.bak
+.DS_Store
+coverage.out
