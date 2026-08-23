@@ -1,0 +1,1 @@
+-- The executable embeds and applies migration 001_init_schema; see internal/store/db.go.
