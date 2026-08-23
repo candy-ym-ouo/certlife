@@ -1,0 +1,1 @@
+-- The executable embeds and applies migration 005_schema_migrations_meta; see internal/store/db.go.

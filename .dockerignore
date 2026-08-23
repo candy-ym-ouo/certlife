@@ -1,0 +1,12 @@
+.git
+.gitignore
+bin
+dist
+deployments
+*.db
+*.db-shm
+*.db-wal
+*.log
+*.bak
+.DS_Store
+coverage.out
