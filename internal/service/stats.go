@@ -19,19 +19,29 @@ type StatsService struct {
 	certs         *store.CertStore
 	renewals      *store.RenewalStore
 	notifications *store.NotificationStore
-	cached        Stats
 }
 
 func NewStatsService(c *store.CertStore, r *store.RenewalStore, n *store.NotificationStore) *StatsService {
-	return &StatsService{certs: c, renewals: r, notifications: n, cached: Stats{ByStatus: map[model.CertificateStatus]int{}, Renewals30D: map[string]int{"total": 0, "succeeded": 0, "failed": 0}, NotificationsToday: map[string]int{"sent": 0, "failed": 0}}}
+	return &StatsService{certs: c, renewals: r, notifications: n}
 }
+
+func newStats() Stats {
+	return Stats{
+		ByStatus:           map[model.CertificateStatus]int{},
+		ExpiringNext7D:     []model.Certificate{},
+		ExpiringNext30D:    0,
+		Renewals30D:        map[string]int{"total": 0, "succeeded": 0, "failed": 0},
+		NotificationsToday: map[string]int{"sent": 0, "failed": 0},
+	}
+}
+
 func (s *StatsService) Dashboard(ctx context.Context) (Stats, error) {
 	items, e := s.certs.All(ctx)
 	total := len(items)
 	if e != nil {
 		return Stats{}, e
 	}
-	out := &s.cached
+	out := newStats()
 	out.Total = total
 	for _, c := range items {
 		out.ByStatus[c.Status]++
@@ -44,7 +54,7 @@ func (s *StatsService) Dashboard(ctx context.Context) (Stats, error) {
 	}
 	renewals, e := s.renewals.All(ctx, store.RenewalFilter{})
 	if e != nil {
-		return *out, e
+		return out, e
 	}
 	cutoff := time.Now().Add(-30 * 24 * time.Hour)
 	for _, r := range renewals {
@@ -61,7 +71,7 @@ func (s *StatsService) Dashboard(ctx context.Context) (Stats, error) {
 	}
 	notifications, e := s.notifications.All(ctx, store.NotificationFilter{})
 	if e != nil {
-		return *out, e
+		return out, e
 	}
 	today := time.Now().UTC().Format("2006-01-02")
 	for _, n := range notifications {
@@ -69,5 +79,5 @@ func (s *StatsService) Dashboard(ctx context.Context) (Stats, error) {
 			out.NotificationsToday[n.Status]++
 		}
 	}
-	return *out, nil
+	return out, nil
 }
