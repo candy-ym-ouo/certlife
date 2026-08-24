@@ -43,7 +43,10 @@ func (s *DeployService) Deploy(ctx context.Context, renewal model.Renewal, cert 
 	for _, targetID := range cert.DeployTargetIDs {
 		target, e := s.targets.GetTarget(ctx, targetID)
 		if e != nil {
-			target = nil
+			if errors.Is(e, store.ErrTargetNotFound) {
+				return out, fmt.Errorf("%w: deployment target %d not found", ErrNotFound, targetID)
+			}
+			return out, e
 		}
 		if !target.Enabled {
 			continue
@@ -98,6 +101,16 @@ func (s *DeployService) Verify(ctx context.Context, renewal model.Renewal, cert 
 		d := items[i]
 		target, e := s.targets.GetTarget(ctx, d.TargetID)
 		if e != nil {
+			if errors.Is(e, store.ErrTargetNotFound) {
+				result := model.VerificationResult{CheckedAt: time.Now().UTC(), Error: "deployment target not found"}
+				d.Verification = &result
+				now := time.Now().UTC()
+				d.FinishedAt = &now
+				d.Status = "verification_failed"
+				d.Detail = "deployment target not found"
+				_ = s.targets.Update(ctx, &d)
+				return false, fmt.Errorf("%w: deployment target %d not found", ErrNotFound, d.TargetID)
+			}
 			return false, e
 		}
 		result := model.VerificationResult{CheckedAt: time.Now().UTC()}
