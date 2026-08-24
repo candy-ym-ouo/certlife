@@ -57,7 +57,7 @@ func (j *Jobs) DeployVerifier(ctx context.Context) JobResult {
 	return JobResult{OK: failedCount == 0, Detail: fmt.Sprintf("processed=%d failed=%d", processed, failedCount), Error: errorWhen(failedCount)}
 }
 func (j *Jobs) NotifyDispatcher(ctx context.Context) JobResult {
-	done := make(chan JobResult)
+	done := make(chan JobResult, 1)
 	go func() {
 		sent, failedCount := j.notify.SendPending(ctx)
 		done <- JobResult{OK: failedCount == 0, Detail: fmt.Sprintf("sent=%d failed=%d", sent, failedCount), Error: errorWhen(failedCount)}

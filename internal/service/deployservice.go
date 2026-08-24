@@ -104,7 +104,7 @@ func (s *DeployService) Verify(ctx context.Context, renewal model.Renewal, cert 
 		if target.Method == "static" {
 			file, openErr := os.Open(s.staticPath(target.ID))
 			if openErr == nil {
-				defer file.Close()
+				_ = file.Close()
 			}
 			result, e = s.verifyStatic(renewal, cert, *target)
 			if e == nil { e = openErr }
