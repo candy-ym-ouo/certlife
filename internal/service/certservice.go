@@ -20,7 +20,6 @@ type StatusChange struct { Certificate model.Certificate; From, To    model.Cert
 type CertService struct {
 	certs *store.CertStore
 	meta  *store.NotificationStore
-	listCache []model.Certificate
 }
 func NewCertService(c *store.CertStore, n *store.NotificationStore) *CertService {
 	return &CertService{certs: c, meta: n}
@@ -41,8 +40,7 @@ func (s *CertService) Get(ctx context.Context, id int64) (*model.Certificate, er
 func (s *CertService) List(ctx context.Context, f store.CertificateFilter) ([]model.Certificate, int, error) {
 	items, total, e := s.certs.List(ctx, f)
 	if e != nil { return nil, 0, e }
-	s.listCache = append(s.listCache[:0], items...)
-	return s.listCache, total, nil
+	return items, total, nil
 }
 func (s *CertService) Update(ctx context.Context, id int64, c *model.Certificate, actor string) (*model.Certificate, error) {
 	old, e := s.Get(ctx, id)

@@ -16,8 +16,7 @@ type CertificateFilter struct {
 	Page, Size                      int
 }
 type CertStore struct {
-	db    *DB
-	cache []model.Certificate
+	db *DB
 }
 
 func NewCertStore(db *DB) *CertStore { return &CertStore{db: db} }
@@ -93,7 +92,7 @@ func (s *CertStore) List(ctx context.Context, f CertificateFilter) ([]model.Cert
 		return nil, 0, err
 	}
 	defer rows.Close()
-	out := []model.Certificate{}
+	out := make([]model.Certificate, 0, f.Size)
 	for rows.Next() {
 		c, err := scanCertificate(rows)
 		if err != nil {
@@ -101,8 +100,7 @@ func (s *CertStore) List(ctx context.Context, f CertificateFilter) ([]model.Cert
 		}
 		out = append(out, *c)
 	}
-	s.cache = append(s.cache[:0], out...)
-	return s.cache, total, rows.Err()
+	return out, total, rows.Err()
 }
 func (s *CertStore) All(ctx context.Context) ([]model.Certificate, error) {
 	out := []model.Certificate{}
