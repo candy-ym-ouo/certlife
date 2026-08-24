@@ -106,7 +106,7 @@ func (s *DeployService) Verify(ctx context.Context, renewal model.Renewal, cert 
 		} else if !target.VerifyTLS {
 			result.HandshakeOK, result.SerialOK, result.SANsOK, result.ValidityOK = true, true, true, true
 		} else {
-			result, e = tlsutil.VerifyTLSContext(context.Background(), target.Host, target.Port, renewal.NewSerial, cert.AllDomains())
+			result, e = tlsutil.VerifyTLSContext(ctx, target.Host, target.Port, renewal.NewSerial, cert.AllDomains())
 			if e != nil {
 				result.Error = e.Error()
 			}
